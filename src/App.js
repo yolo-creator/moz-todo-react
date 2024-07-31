@@ -1,12 +1,12 @@
-import Form from "./components/Form";
+import Todo from "./components/Todo"
+import Form from "./components/Form"
 import FilterButton from "./components/FilterButton";
-import Todo from "./components/Todo";
 import { useState } from "react";
 import { nanoid } from "nanoid";
 
+export default function App(props) {
 
-function App(props) {
-  const [tasks, setTasks] = useState(props.tasks);
+  const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState("All");
 
   const FILTER_MAP = {
@@ -14,9 +14,15 @@ function App(props) {
     Active: (task) => !task.completed,
     Completed: (task) => task.completed,
   };
+
   const FILTER_NAMES = Object.keys(FILTER_MAP);
   const filterList = FILTER_NAMES.map((name) => (
-    <FilterButton key={name} name={name} />
+    <FilterButton
+      key={name}
+      name={name}
+      isPressed={name === filter}
+      setFilter={setFilter}
+    />
   ));
 
 
@@ -57,6 +63,8 @@ function App(props) {
     setTasks(editedTaskList);
   }
 
+
+
   const taskList = tasks
     .filter(FILTER_MAP[filter])
     .map((task) => (
@@ -79,21 +87,18 @@ function App(props) {
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
-      <Form />
+      <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">
         {filterList}
       </div>
-      <h2 id="list-heading">3 tasks remaining</h2>
+      <h2 id="list-heading">{headingText}</h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading">
         {taskList}
+
       </ul>
     </div>
   );
 }
-
-const newTask = { id: `todo-${nanoid()}`, name, completed: false };
-
-export default App;
