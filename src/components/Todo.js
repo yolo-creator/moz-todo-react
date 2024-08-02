@@ -1,9 +1,43 @@
 import React from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
 
 function Todo(props) {
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState("");
+
+  function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+      ref.current = value;
+    });
+    return ref.current;
+  }
+  
+  
+  const wasEditing = usePrevious(isEditing);
+
+
+  // int * p = &a;
+  const editFieldRef = useRef(null);
+  const editButtonRef = useRef(null);
+
+
+  console.log(editButtonRef.current);
+
+
+  //document.getElementById()
+
+  useEffect(() => {
+    if (!wasEditing && isEditing) {
+      editFieldRef.current.focus();
+    } else if (wasEditing && !isEditing) {
+      editButtonRef.current.focus();
+    }
+  }, [wasEditing, isEditing]);
+  
+  
+
 
   function handleChange(e) {
     setNewName(e.target.value);
@@ -28,6 +62,7 @@ function Todo(props) {
           type="text"
           value={newName}
           onChange={handleChange}
+          ref={editFieldRef}
         />
       </div>
       <div className="btn-group">
@@ -63,11 +98,11 @@ function Todo(props) {
         <button
           type="button"
           className="btn"
-          onClick={() => {
-            setEditing(true);
-          }}>
+          onClick={() => setEditing(true)}
+          ref={editButtonRef}>
           Edit <span className="visually-hidden">{props.name}</span>
         </button>
+
         <button
           type="button"
           className="btn btn__danger"
@@ -82,4 +117,3 @@ function Todo(props) {
 }
 
 export default Todo;
-
